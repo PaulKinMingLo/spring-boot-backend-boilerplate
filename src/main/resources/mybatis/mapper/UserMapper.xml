@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kml.springbootbackend.model.UserMapper">
+    <resultMap id="UserResultMap" type="User">
+        <id property="id" column="id" jdbcType="NUMERIC"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="fullName" column="full_name" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="resetFlag" column="reset_flag" jdbcType="NUMERIC"/>
+        <result property="resetDate" column="reset_date" jdbcType="DATE"/>
+        <result property="failedAttempt" column="failed_attempt" jdbcType="NUMERIC"/>
+        <result property="dateCreated" column="date_created" jdbcType="DATE"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="dateModified" column="date_modified" jdbcType="DATE"/>
+        <result property="modifiedBy" column="modified_by" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="User_Column_List">
+        id, username, full_name, email, password, reset_flag, reset_date, failed_attempt, date_created, created_by, date_modified, modified_by, status
+    </sql>
+
+    <sql id="User_Column_Insert_List">
+        (username, full_name, email, password, reset_flag, reset_date, failed_attempt, date_created, created_by, date_modified, modified_by, status)
+    </sql>
+
+    <sql id="User_Value_Insert_List">
+        #{username}, #{full_name}, #{email}, #{password}, #{resetFlag}, #{resetDate}, #{failedAttempt}, now(), #{createdBy}, now(), #{modifiedBy}, 'A'
+    </sql>
+
+    <select id="getById" parameterType="Long" resultMap="UserResultMap">
+        select
+            <include refid="User_Column_List"/>
+        from user
+        where id = #{id} and status = 'A'
+    </select>
+
+    <update id="updateByUser" parameterType="User">
+        update user
+        <set>
+            <if test="username != null"> username = #{username}, </if>
+            <if test="fullName != null"> full_name = #{fullName}, </if>
+            <if test="password != null"> password = #{password}, </if>
+            <if test="email != null"> email = #{email}, </if>
+            <if test="resetFlag != null"> reset_flag = #{resetFlag}, </if>
+            <if test="resetDate != null"> reset_date = #{resetDate}, </if>
+            <if test="failedAttempt != null"> failed_attempt = #{failedAttempt}, </if>
+            <if test="status != null"> status = #{status}, </if>
+            <if test="modifiedBy != null"> modified_by = #{modifiedBy}, </if>
+            <if test="dateModified != null"> date_modified = now() </if>
+        </set>
+        where id = {id}
+    </update>
+
+    <insert id="insertByUser" parameterType="User">
+        insert into user <include refid="User_Column_Insert_List"/>
+        values
+        <include refid="User_Value_Insert_List"/>
+    </insert>
+    
+</mapper>
