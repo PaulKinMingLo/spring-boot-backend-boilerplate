@@ -10,4 +10,6 @@ public interface UserMapper {
     public int updateByUser(User entity);
 
     public int insertByUser(User entity);
+
+    public User findByUsername(String username);
 }

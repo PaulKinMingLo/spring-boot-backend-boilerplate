@@ -1,12 +1,17 @@
 package com.kml.springbootbackend.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kml.springbootbackend.model.User;
 import com.kml.springbootbackend.model.UserMapper;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
     
     @Autowired
@@ -32,5 +37,12 @@ public class UserService {
             return userMapper.updateByUser(user) > 0;
         }
         return false;
+    }
+
+    public Optional<User> findByUsername(String username) {
+        if (!username.isBlank()) {
+            return Optional.ofNullable(userMapper.findByUsername(username));
+        }
+        return Optional.empty();
     }
 }

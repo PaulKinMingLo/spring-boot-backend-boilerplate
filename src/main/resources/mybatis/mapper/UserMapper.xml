@@ -58,5 +58,12 @@
         values
         <include refid="User_Value_Insert_List"/>
     </insert>
+
+    <select id="findByUsername" parameterType="String" resultMap="UserResultMap">
+        select 
+            <include refid="User_Column_List"/>
+        from user
+        where username = #{username} and status = 'A'
+    </select>
     
 </mapper>
