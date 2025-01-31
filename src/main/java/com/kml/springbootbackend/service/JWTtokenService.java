@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.kml.springbootbackend.model.User;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
 @Service
@@ -26,8 +29,13 @@ public class JWTtokenService {
             .issuer("kml")
             .expiration(Date.from(Instant.now().plusSeconds(36000)))
             .issuedAt(new Date())
-            .claim("username", user.getUsername()).compact();
+            .claim("username", user.getUsername())
+            .compact();
 
         return jws;
+    }
+
+    public Jws<Claims> getClaimsFromToken(String token) throws JwtException {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
     }
 }
