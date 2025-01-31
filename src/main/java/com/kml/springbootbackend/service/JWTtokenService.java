@@ -12,7 +12,9 @@ import com.kml.springbootbackend.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 @Service
 public class JWTtokenService {
@@ -23,6 +25,20 @@ public class JWTtokenService {
 
     JWTtokenService() {
         this.secretKey = Jwts.SIG.HS256.key().build();
+    }
+
+    // private method that check if the token is signed with the secret key or not
+    private JwtParser getValidJwtParserFrom(String token) throws UnsupportedJwtException {
+        Claims claims = Jwts.parser().verifyWith(secretKey).build()
+            .parseSignedClaims(token).getPayload();
+
+        Instant expDate = claims.get("exp", Date.class).toInstant();
+
+        if (expDate.isBefore(new Date().toInstant()) && claims.get("iss", String.class).equals(issuer)) {
+            return Jwts.parser().verifyWith(secretKey).build();
+        } else {
+            throw new UnsupportedJwtException("Expired token / Invalid token");
+        }   
     }
 
     public String generateToken(User user) throws Exception {
@@ -38,7 +54,7 @@ public class JWTtokenService {
     }
 
     public Jws<Claims> getClaimsFromToken(String token) throws JwtException {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+        return getValidJwtParserFrom(token).parseSignedClaims(token);
     }
 
     // return true if token is signed with the secret key and not expired
