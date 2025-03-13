@@ -17,16 +17,18 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    public User getUserById(Long id) {
+    public Optional<User> getUserById(Long id) {
         if (id > 0L) {
-            return userMapper.getById(id);
+            // return Optional.ofNullable(userMapper.getById(id));
+            return Optional.ofNullable(userMapper.findById(id));
         }
-        return null;
+        return Optional.empty();
     }
 
     public boolean updateUser(User user) {
         if (user != null) {
-            return userMapper.updateByUser(user) > 0;
+            // return userMapper.updateByUser(user) > 0;
+            return userMapper.updateBy(user) > 0;
         }
         return false;
     }
@@ -34,7 +36,8 @@ public class UserService {
     public boolean increaseFailedAttempt(User user) {
         if (user != null) {
             user.setFailedAttempt(user.getFailedAttempt() + 1);
-            return userMapper.updateByUser(user) > 0;
+            // return userMapper.updateByUser(user) > 0;
+            return userMapper.updateBy(user) > 0;
         }
         return false;
     }
@@ -42,6 +45,13 @@ public class UserService {
     public Optional<User> findByUsername(String username) {
         if (!username.isBlank()) {
             return Optional.ofNullable(userMapper.findByUsername(username));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<User> getUserByCredenial(String username, String password) {
+        if (!username.isBlank() && !password.isBlank()) {
+            return Optional.ofNullable(userMapper.getByCredential(username, password));
         }
         return Optional.empty();
     }

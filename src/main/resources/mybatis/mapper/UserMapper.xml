@@ -29,6 +29,13 @@
         #{username}, #{full_name}, #{email}, #{password}, #{resetFlag}, #{resetDate}, #{failedAttempt}, now(), #{createdBy}, now(), #{modifiedBy}, 'A'
     </sql>
 
+    <select id="findById" parameterType="Long" resultMap="UserResultMap">
+        select
+            <include refid="User_Column_List"/>
+        from user
+        where id = #{id} and status = 'A'
+    </select>
+
     <select id="getById" parameterType="Long" resultMap="UserResultMap">
         select
             <include refid="User_Column_List"/>
@@ -53,7 +60,29 @@
         where id = {id}
     </update>
 
+    <update id="updateBy" parameterType="User">
+        update user
+        <set>
+            <if test="username != null"> username = #{username}, </if>
+            <if test="fullName != null"> full_name = #{fullName}, </if>
+            <if test="password != null"> password = #{password}, </if>
+            <if test="email != null"> email = #{email}, </if>
+            <if test="resetFlag != null"> reset_flag = #{resetFlag}, </if>
+            <if test="resetDate != null"> reset_date = #{resetDate}, </if>
+            <if test="failedAttempt != null"> failed_attempt = #{failedAttempt}, </if>
+            <if test="status != null"> status = #{status}, </if>
+            <if test="modifiedBy != null"> modified_by = #{modifiedBy}, </if>
+            <if test="dateModified != null"> date_modified = now() </if>
+        </set>
+    </update>
+
     <insert id="insertByUser" parameterType="User">
+        insert into user <include refid="User_Column_Insert_List"/>
+        values
+        <include refid="User_Value_Insert_List"/>
+    </insert>
+
+    <insert id="insertBy" parameterType="User">
         insert into user <include refid="User_Column_Insert_List"/>
         values
         <include refid="User_Value_Insert_List"/>
@@ -64,6 +93,15 @@
             <include refid="User_Column_List"/>
         from user
         where username = #{username} and status = 'A'
+    </select>
+
+    <select id="getByCredential" resultMap="UserResultMap">
+        select
+            <include refid="User_Column_List"/>
+        from user
+        where username = #{username}
+        and password = #{password}
+        and status = 'A'
     </select>
     
 </mapper>
